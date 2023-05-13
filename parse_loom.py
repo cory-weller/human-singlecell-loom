@@ -14,7 +14,7 @@ out_filename = 'goi_percentiles.tsv'
 
 # 59480 genes
 # 3369219 cells
-# I use h5py to read the datasets because loom is stupid
+# I use h5py to read the datasets because loom isn't necessary for this analysis
 
 def get_chunk(ds, idx_start, idx_end):
     # p represents the nth percent of the matrix
