@@ -17,7 +17,6 @@ out_filename = 'goi_percentiles.tsv'
 # I use h5py to read the datasets because loom isn't necessary for this analysis
 
 def get_chunk(ds, idx_start, idx_end):
-    # p represents the nth percent of the matrix
     return(ds[:, idx_start : idx_end])
 
 
