@@ -1,1 +1,3 @@
+metadata.Rdata
 *.gtf
+slurm*.out
