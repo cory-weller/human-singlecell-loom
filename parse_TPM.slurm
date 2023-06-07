@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#SBATCH --time 2:59:00
+#SBATCH --time 0:29:00
 #SBATCH --partition quick,norm
 #SBATCH --mem 20G
 #SBATCH --nodes 1
@@ -21,10 +21,13 @@ output_dir='/data/CARD_AA/users/wellerca/goi_percentiles/'
 
 mkdir -p ${output_dir}
 
+N=${SLURM_ARRAY_TASK_ID}
+
 Rscript parse_TPM.R \
     ${h5_object} \
     ${goi_filename} \
     ${input_dir} \
-    ${output_dir}
+    ${output_dir} \
+    ${N}
 
 

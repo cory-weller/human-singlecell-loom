@@ -4,14 +4,13 @@ library(data.table)
 library(ggplot2)
 library(foreach)
 
-h5_object <-  '/data/CARD_AA/users/wellerca/data/adult_human_20221007.loom'
-input_dir <- '/data/CARD_AA/users/wellerca/data/'
-
 args <- commandArgs(trailingOnly=TRUE)
 h5_object <- args[1]
 goi_filename <- args[2]
 input_dir <- args[3]
 output_dir <- args[4]
+N <- as.numeric(args[5])
+cat(paste0('Job Array #', N, '\n'))
 
 
 if (file.exists('metadata.Rdata')) {
@@ -32,14 +31,9 @@ if (file.exists('metadata.Rdata')) {
     save(list=ls(), file='metadata.Rdata')
 }
 
-
-
 goi <- readLines(goi_filename)
 
 
-# get batch number from auto-set SLURM variable
-N <- as.numeric(Sys.getenv('SLURM_ARRAY_TASK_ID'))
-cat(paste0('Job Array #', N, '\n'))
 
 # set input to file corresponding to Nth batch
 in_filename <- file_list[N]
