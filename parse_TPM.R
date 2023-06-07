@@ -9,7 +9,6 @@ h5_object <- args[1]
 goi_filename <- args[2]
 input_dir <- args[3]
 output_dir <- args[4]
-N <- as.numeric(args[5])
 cat(paste0('Job Array #', N, '\n'))
 
 
@@ -27,9 +26,12 @@ if (file.exists('metadata.Rdata')) {
 
     h5closeAll()
     rm(h5_file)
+    rm(h5_object)
     file_list <- list.files(input_dir, pattern="TPM_.*.tsv.gz", full.names=TRUE)
     save(list=ls(), file='metadata.Rdata')
 }
+
+N <- as.numeric(args[5])
 
 goi <- readLines(goi_filename)
 
