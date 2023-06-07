@@ -5,7 +5,8 @@
 #SBATCH --nodes 1
 #SBATCH --ntasks 1
 
-module load R/4.2
+
+## EDIT IF NECESSARY #################################################
 
 # Input h5 object
 h5_object='/data/CARD_AA/users/wellerca/data/adult_human_20221007.loom'
@@ -14,19 +15,25 @@ h5_object='/data/CARD_AA/users/wellerca/data/adult_human_20221007.loom'
 goi_filename='goi-2.txt'
 
 # directory containing TPM files
-input_dir='/data/CARD_AA/users/wellerca/data/'
+TPM_dir='/data/CARD_AA/users/wellerca/data/'
 
 # directory to output percentile files
 output_dir='/data/CARD_AA/users/wellerca/goi_percentiles/'
 
-mkdir -p ${output_dir}
+######################################################################
 
+
+## Run
+
+module load R/4.2
+
+mkdir -p ${output_dir}
 N=${SLURM_ARRAY_TASK_ID}
 
 Rscript parse_TPM.R \
     ${h5_object} \
     ${goi_filename} \
-    ${input_dir} \
+    ${TPM_dir} \
     ${output_dir} \
     ${N}
 

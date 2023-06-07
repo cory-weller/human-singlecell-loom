@@ -60,7 +60,7 @@ if (! file.exists('tx_lengths.tsv')) {
     # Calculation gene-specific exon lengths
     library(GenomicFeatures) 
 
-    gtf_filename <- 'gb_pri_annot.gtf'
+    gtf_filename <- '/data/CARD_AA/users/wellerca/data/gb_pri_annot.gtf'
 
     # Import GTF into R 
     txdb <- makeTxDbFromGFF(gtf_filename,format="gtf")
