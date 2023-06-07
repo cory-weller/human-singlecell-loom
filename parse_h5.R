@@ -1,15 +1,14 @@
 #!/usr/bin/env Rscript
 
+# Converts h5 feature counts to TPM
+
 library(data.table)
 library(ggplot2)
 library(foreach)
 library(rhdf5)
 
-
-
 goi_filename <- 'genes_of_interest.tsv'
 loom_obj <- '/data/CARD_AA/users/wellerca/data/adult_human_20221007.loom'
-out_filename <- 'goi_percentiles_from_R.tsv'
 
 out_dir <- '/data/CARD_AA/users/wellerca/data/'
 
@@ -34,9 +33,6 @@ n_cells <- length(cellIDs)
 n_genes <- length(gene_ENSEMBL)
 
 
-# 1 row, 59480 (gene) cols
-
-
 get_TPM <- function(counts) {
     # Divide counts by transcript length
     normcounts <- counts * one_over_tx_lengths
@@ -49,52 +45,6 @@ get_TPM <- function(counts) {
     return(TPM)
 }
 
-
-# Ignore these 21 values (set to 0 in TPM calculation)
-#     pcDNA3-CFP_951-1700
-#                    Cas9
-#             pET-mOrange
-#        pCS-Cre2_51-1150
-# pCS-Cherry-DEST_101-850
-#              pCAG-HcRed
-#      pCAG-GFP_1751-2500
-#               pCAG-EYFP
-#     pCAG-DsRed2_101-650
-#                  gRNA16
-#                  gRNA15
-#                  gRNA14
-#                  gRNA13
-#                  gRNA11
-#                    WRPE
-#  FUdGW-Tomato_3801-5300
-#       piRFP670-N1_1-950
-#                    EGFP
-#                  gRNA10
-#                  gRNA12
-#                  gRNA17
-
-# Add row index values of Linnarsson h5 gene IDs
-
-# dat[, ENSEMBL := tstrsplit(ENSEMBLV, '\\.')[1]]
-
-# Convert ENSEMBL to SYMBOL
-
-# library(org.Hs.eg.db)
-
-
-# gene_symbols <- select(
-#                     org.Hs.eg.db, 
-#                     keys = dat$ENSEMBL,
-#                     columns = "SYMBOL",
-#                     keytype = "ENSEMBL"
-#                 )
-
-# dat[ENSEMBLV %like% 'PAR', ENSEMBL := ENSEMBLV]
-
-# setDT(gene_symbols)
-# gene_symbols[is.na(SYMBOL), SYMBOL := ENSEMBL]
-# gene_symbols <- as.data.table(gene_symbols)
-# gene_symbols <- unique(gene_symbols)
 
 
 
@@ -139,6 +89,31 @@ if (! file.exists('tx_lengths.tsv')) {
 # genes to ignore as 0, so TPM will also be 0
 tx_lengths[, const := 1/TX_LENGTH]
 tx_lengths[is.na(TX_LENGTH), const := 0]
+
+# Will ignore these 21 features
+#     pcDNA3-CFP_951-1700
+#                    Cas9
+#             pET-mOrange
+#        pCS-Cre2_51-1150
+# pCS-Cherry-DEST_101-850
+#              pCAG-HcRed
+#      pCAG-GFP_1751-2500
+#               pCAG-EYFP
+#     pCAG-DsRed2_101-650
+#                  gRNA16
+#                  gRNA15
+#                  gRNA14
+#                  gRNA13
+#                  gRNA11
+#                    WRPE
+#  FUdGW-Tomato_3801-5300
+#       piRFP670-N1_1-950
+#                    EGFP
+#                  gRNA10
+#                  gRNA12
+#                  gRNA17
+
+
 one_over_tx_lengths <- tx_lengths$const
 
 chunk_size <- 5000
@@ -173,43 +148,4 @@ for(start_idx in seq(1,n_cells,chunk_size)) {
 h5closeAll()
 
 quit(status=0)
-
-
-
-get_percentiles <- function(V, indices_of_interest) {
-    N <- length(V)
-    N_nonzero <- sum(V>0)
-    foreach(i = indices_of_interest, .combine='rbind') %do% {
-        data.table('idx'=i, 
-                   'pct_overall'=floor(100*sum(V < V[i])/N)
-                   )
-    }
-}
-
-
-get_percentiles_overall <- function(V) {
-    N <- length(V)
-    N_nonzero <- sum(V>0)
-    o <- foreach(i = indices_of_interest, .combine='rbind') %do% {
-            'pct_overall'=floor(100*sum(V < V[i])/N)
-    }
-    o[,1]
-}
-
-get_percentiles_expressed <- function(V) {
-    N <- length(V)
-    N_nonzero <- sum(V>0)
-    o <- foreach(i = indices_of_interest, .combine='rbind') %do% {
-        N_expressed_more <- sum(V > V[i])
-        'pct_expressed'=floor(100*(N_nonzero - N_expressed_more) / N_nonzero)
-    }
-    o[,1]
-}
-
-indices_of_interest <- c(1:100)
-
-
-percentile_overall <- t(chunk_TPM[, lapply(.SD, get_percentiles), .SDcols = colnames(chunk_TPM)])
-
-percentile_of_expressed_genes <- t(chunk_TPM[, lapply(.SD, get_percentiles_expressed), .SDcols = colnames(chunk_TPM)])
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#SBATCH --time 0:59:00
+#SBATCH --time 2:59:00
 #SBATCH --partition quick,norm
 #SBATCH --mem 20G
 #SBATCH --nodes 1
@@ -7,7 +7,24 @@
 
 module load R/4.2
 
-Rscript parse_TPM.R
+# Input h5 object
+h5_object='/data/CARD_AA/users/wellerca/data/adult_human_20221007.loom'
 
+# Genes of interest filename
+goi_filename='goi-2.txt'
+
+# directory containing TPM files
+input_dir='/data/CARD_AA/users/wellerca/data/'
+
+# directory to output percentile files
+output_dir='/data/CARD_AA/users/wellerca/goi_percentiles/'
+
+mkdir -p ${output_dir}
+
+Rscript parse_TPM.R \
+    ${h5_object} \
+    ${goi_filename} \
+    ${input_dir} \
+    ${output_dir}
 
 
