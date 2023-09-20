@@ -13,9 +13,6 @@ input_h5 <- fs::path_real(args[1])
 out_dir <- fs::path_real(args[2])
 
 
-
-out_dir <- '/data/CARD_AA/users/wellerca/data/'
-
 # 59480 genes
 # 3369219 cells
 # I use h5py to read the datasets because loom is stupid
@@ -30,8 +27,6 @@ h5_file <- H5Fopen(input_h5)
 cellIDs <- h5read(h5_file, "col_attrs/CellID")
 gene_Symbols <- h5read(h5_file, "row_attrs/Gene")
 gene_ENSEMBL <- h5read(h5_file, "row_attrs/Accession")
-
-chunk_cellIDs <- cellIDs[start_idx:stop_idx]
 
 n_cells <- length(cellIDs)
 n_genes <- length(gene_ENSEMBL)
@@ -125,7 +120,7 @@ chunk_size <- 5000
 for(start_idx in seq(1,n_cells,chunk_size)) {
     
     stop_idx <- start_idx + chunk_size - 1
-    outfilename <- paste0(out_dir, 'TPM_', start_idx, '_', stop_idx, '.tsv.gz')
+    outfilename <- paste0(out_dir, '/TPM_', start_idx, '_', stop_idx, '.tsv.gz')
 
     # go to next chunk if file exists
     if(file.exists(outfilename)) {
