@@ -4,4 +4,4 @@
 #SBATCH --time 8:00:00
 
 module load R/4.2
-Rscript parse_loom.R
+Rscript parse_h5.R

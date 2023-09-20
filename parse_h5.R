@@ -7,8 +7,12 @@ library(ggplot2)
 library(foreach)
 library(rhdf5)
 
-goi_filename <- 'genes_of_interest.tsv'
-loom_obj <- '/data/CARD_AA/users/wellerca/data/adult_human_20221007.loom'
+args <- commandArgs(trailingOnly=TRUE)
+
+input_h5 <- fs::path_real(args[1])
+out_dir <- fs::path_real(args[2])
+
+
 
 out_dir <- '/data/CARD_AA/users/wellerca/data/'
 
@@ -20,7 +24,7 @@ out_dir <- '/data/CARD_AA/users/wellerca/data/'
 library(rhdf5)
 
 # Open the H5 object
-h5_file <- H5Fopen(loom_obj)
+h5_file <- H5Fopen(input_h5)
 
 # Read a dataset from the H5 object
 cellIDs <- h5read(h5_file, "col_attrs/CellID")

@@ -9,7 +9,6 @@ h5_object <- args[1]
 goi_filename <- args[2]
 input_dir <- args[3]
 output_dir <- args[4]
-cat(paste0('Job Array #', N, '\n'))
 
 
 if (file.exists('metadata.Rdata')) {
@@ -25,13 +24,13 @@ if (file.exists('metadata.Rdata')) {
     gene_ENSEMBL <- h5read(h5_file, "row_attrs/Accession")
 
     h5closeAll()
-    rm(h5_file)
-    rm(h5_object)
     file_list <- list.files(input_dir, pattern="TPM_.*.tsv.gz", full.names=TRUE)
-    save(list=ls(), file='metadata.Rdata')
+    
+    save(cellIDs, gene_Symbols, gene_ENSEMBL, file_list, file='metadata.Rdata')
 }
 
 N <- as.numeric(args[5])
+cat(paste0('Job Array #', N, '\n'))
 
 goi <- readLines(goi_filename)
 
